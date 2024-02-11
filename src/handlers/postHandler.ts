@@ -1,11 +1,12 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { users } from '../constants/constants.js';
+import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import { bodyParser } from '../utils/bodyParser.js';
 import { User } from '../types/types.js';
 import { InterfaceChecker } from '../utils/InterfaceChecker.js';
 
 export const postHandler = (req: IncomingMessage, res: ServerResponse) => {
+  const users = JSON.parse(fs.readFileSync('db.json', 'utf8'));
   try {
     bodyParser(req, res, (parsedBody:User) => {
       const personChecker = new InterfaceChecker<User>({ username: '', age: 0, hobbies: [] });
@@ -17,6 +18,7 @@ export const postHandler = (req: IncomingMessage, res: ServerResponse) => {
       }
       parsedBody.id = uuidv4();
       users.push(parsedBody);
+      fs.writeFileSync('db.json', JSON.stringify(users));
       res.writeHead(201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(parsedBody));
     });

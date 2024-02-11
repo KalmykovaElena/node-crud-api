@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { users } from '../constants/constants.js';
+import fs from 'fs';
 import { validate } from 'uuid';
 import { bodyParser } from '../utils/bodyParser.js';
 import { User } from '../types/types.js';
@@ -7,7 +7,8 @@ import { InterfaceChecker } from '../utils/InterfaceChecker.js';
 
 export const puttHandler = (req: IncomingMessage, res: ServerResponse) => {
   const userId = req.url?.split('/').pop();
-  const userIndex = users.findIndex((user) => user.id === userId);
+  const users = JSON.parse(fs.readFileSync('db.json', 'utf8'));
+  const userIndex = users.findIndex((user: User) => user.id === userId);
   if (!userId || !validate(userId)) {
     res.writeHead(400);
     res.end('UserId is not valid');
@@ -29,6 +30,7 @@ export const puttHandler = (req: IncomingMessage, res: ServerResponse) => {
       }
       parsedBody.id = userId;
       users.splice(userIndex, 1, parsedBody);
+      fs.writeFileSync('db.json', JSON.stringify(users));
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(parsedBody));
     });

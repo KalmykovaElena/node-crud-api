@@ -1,9 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { users } from '../constants/constants.js';
+import fs from 'fs';
+import { User } from '../types/types.js';
 import { validate } from 'uuid';
 
 export const getHandler = (req: IncomingMessage, res: ServerResponse) => {
   const userId = req.url?.split('/').pop();
+  const users = JSON.parse(fs.readFileSync('db.json', 'utf8'));
   console.log(userId);
   if (userId === 'users' || userId === '') {
     res.writeHead(200, {
@@ -17,7 +19,7 @@ export const getHandler = (req: IncomingMessage, res: ServerResponse) => {
     res.end(`UserId "${userId}" is not valid`);
     return;
   }
-  const user = users.find((user) => user.id === userId);
+  const user = users.find((user:User) => user.id === userId);
 
   if (!user) {
     res.writeHead(404);

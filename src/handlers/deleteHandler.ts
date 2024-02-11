@@ -1,10 +1,12 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { users } from '../constants/constants.js';
+import fs from 'fs';
+import { User } from '../types/types.js';
 import { validate } from 'uuid';
 
 export const deleteHandler = (req: IncomingMessage, res: ServerResponse) => {
   const userId = req.url?.split('/').pop();
-  const userIndex = users.findIndex((user) => user.id === userId);
+  const users = JSON.parse(fs.readFileSync('db.json', 'utf8'));
+  const userIndex = users.findIndex((user:User) => user.id === userId);
   if (!userId || !validate(userId)) {
     res.writeHead(400);
     res.end('UserId is not valid');
@@ -17,7 +19,8 @@ export const deleteHandler = (req: IncomingMessage, res: ServerResponse) => {
   }
   try {
     users.splice(userIndex, 1);
-    res.writeHead(201, { 'Content-Type': 'application/text' });
+    fs.writeFileSync('db.json', JSON.stringify(users));
+    res.writeHead(201, { 'Content-Type': 'text/plain' });
     res.end('user deleted');
   } catch (error) {
     console.error('The following error occurred during the DELETE request process:', error);
