@@ -14,7 +14,7 @@
     "noImplicitAny": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "jest"],
   "exclude": ["node_modules"],
   "lib": ["esnext"],
   "ts-node": {
