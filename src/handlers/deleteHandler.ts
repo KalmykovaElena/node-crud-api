@@ -20,7 +20,7 @@ export const deleteHandler = (req: IncomingMessage, res: ServerResponse) => {
   try {
     users.splice(userIndex, 1);
     fs.writeFileSync('db.json', JSON.stringify(users));
-    res.writeHead(201, { 'Content-Type': 'text/plain' });
+    res.writeHead(204, { 'Content-Type': 'text/plain' });
     res.end('user deleted');
   } catch (error) {
     console.error('The following error occurred during the DELETE request process:', error);
